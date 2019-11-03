@@ -1,56 +1,90 @@
 # ChamberlainMyQ Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+[Chamberlain MyQ](http://www.chamberlain.com/smartphone-control-products/myq-smartphone-control) system allows you to connect your garage door to the internet to be controlled from anywhere using your smartphone. Using this API, The Chamberlain MyQ Binding can get the status of your garage door opener and send commands to open or close it.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+```
+MyQ Gateway Thing Bridge - Gateway to MyQ Online API, Must be configured to use binding.
+MyQ Garage Door Thing - Standard Chamberlain Garage Door.
+MyQ Light Switch Thing - Chamberlain MyQ Controlled Light Switch or Plugin Module.
+```
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Gararge Doors and Light Modules Things will be auto Discovery after a MYQ Gateway Thing is added manually.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The Chamberlain MyQ Gateway Thing only requires your Chamberlain MyQ Username and Password.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+|   Property   | Default | Required | Description |
+|--------------|---------|:--------:|-------------|
+| username     |         |   Yes    | Chamberlain MyQ Username |
+| password     |         |   Yes    | Chamberlain MyQ Password |
+| refresh      | 60      |   No     | Data refresh interval in seconds |
+| quickrefresh | 2       |   No     | Data refresh interval after Event is trigger in seconds |
+| timeout      | 25      |   No     | Timeout for HTTP requests in seconds |
 
 ## Channels
+```
+Door State - Garage Door Open/Close State.
+Roller State - Garage Door Roller Shutter State.
+Door Status - Garage Door Status as a string.
+Door Open - Garage Door Is Open Contact.
+Door Closed - Garage Door Is Closed Contact.
+Light State - Light On/Off State.
+Serial Number - MyQ Device Serial Number.
+Description - MyQ Device Description, Should Match Device User specified Name in the MyQ app.
+```
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+## Examples
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### Items
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+```
+Switch LampModule               "Lamp Module On"                {channel="chamberlainmyq:MyQLight:344bf0bc:108573427:lightstate"}
+String LampModuleDesc           "Lamp Module Desc [%s]"         {channel="chamberlainmyq:MyQLight:344bf0bc:108573427:name"}
+String LampModuleSerialNumber   "Lamp Module SerialNumber [%s]" {channel="chamberlainmyq:MyQLight:344bf0bc:108573427:serialnumber"}
 
-## Full Example
+Switch LightSwitch               "Light Switch On"                {channel="chamberlainmyq:MyQLight:344bf0bc:20384288:lightstate"}
+String LightSwitchDesc           "Light Switch Desc [%s]"         {channel="chamberlainmyq:MyQLight:344bf0bc:20384288:name"}
+String LightSwitchSerialNumber   "Light Switch SerialNumber [%s]" {channel="chamberlainmyq:MyQLight:344bf0bc:20384288:serialnumber"}
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Switch GarageDoorSwitch         "Garage Door Open"              {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:doorstate"}
+String GarageDoorString         "Garage Door [%s]"              {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:doorstatus"}
+Rollershutter GarageDoorShutter "Garage Door Open"              {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:rollerstate"}
+Contact GarageDoorOpenContact   "Garage Door Open [%s]"         {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:dooropen"}
+Contact GarageDoorClosedContact "Garage Door Closed [%s]"       {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:doorclosed"}
+String GarageDoorDesc           "Garage Door Desc [%s]"         {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:name"}
+String GarageDoorSerialNumber   "Garage Door SerialNumber [%s]" {channel="chamberlainmyq:MyQDoorOpener:344bf0bc:1810905:serialnumber"}
+```
 
-## Any custom content here!
+### Sitemap
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+Switch item=LampModule
+Text item=LampModuleDesc
+Text item=LampModuleSerialNumber
+
+Switch item=LightSwitch
+Text item=LightSwitchDesc
+Text item=LightSwitchSerialNumber
+
+Switch item=GarageDoorSwitch
+Text item=GarageDoorString
+Switch item=GarageDoorShutter
+Text item=GarageDoorOpenContact
+Text item=GarageDoorClosedContact
+Text item=GarageDoorDesc
+Text item=GarageDoorSerialNumber
+```
+
+## Known Working Hardware
+
+| Model     | Name |
+|-----------|------|
+| HD950WF   | Chamberlain 1.25 hps Wi-Fi Garage Door Opener |
+| 825LM     | Liftmaster 825LM Remote Light Module |
+| 823LM     | Liftmaster 823LM Remote Light Switch |
