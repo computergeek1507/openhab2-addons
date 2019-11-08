@@ -57,7 +57,6 @@ public abstract class ChamberlainMyQHandler extends BaseThingHandler {
         String id = getThing().getProperties().get(MYQ_SERIAL);
         logger.debug("Thing ID: {}", id);
         this.deviceConfig = new ChamberlainMyQDeviceConfig(getThing().getProperties());
-        // parseConfig(config); */
         logger.info("Initializing a MyQ device: \n{}", deviceConfig.asString());
     }
 
@@ -144,7 +143,6 @@ public abstract class ChamberlainMyQHandler extends BaseThingHandler {
      * Query the {@link MyQGatewayHandler} for this device's state.
      */
     protected void readDeviceState() {
-        // logger.debug("Querying the device state for: \n{}", deviceConfig.asString());
         try {
             getGatewayHandler().sendRequestToServer(new ReadDeviceStateCallback(this));
         } catch (IOException e) {
@@ -167,7 +165,7 @@ public abstract class ChamberlainMyQHandler extends BaseThingHandler {
                 continue;
             }
             if (element.getAsJsonObject().get(MYQ_SERIAL) != null) {
-                String findDeviceSerial = element.getAsJsonObject().get(MYQ_SERIAL).toString();
+                String findDeviceSerial = element.getAsJsonObject().get(MYQ_SERIAL).getAsString();
                 if (deviceSerial.compareTo(findDeviceSerial) == 0) {
                     updateState(element.getAsJsonObject());
                 }

@@ -15,12 +15,9 @@
 			<channel id="doorstatus" typeId="doorstatus"/>
 			<channel id="dooropen" typeId="dooropen"/>
 			<channel id="doorclosed" typeId="doorclosed"/>
-			<channel id="deviceName" typeId="name"/>
-			<channel id="deviceType" typeId="type"/>
+			<channel id="devicename" typeId="devicename"/>
+			<channel id="devicetype" typeId="devicetype"/>
 		</channels>
-		<properties>
-			<property name="SerialNumber"></property>
-		</properties>
 	</thing-type>
 </thing:thing-descriptions>
 

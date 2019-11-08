@@ -60,7 +60,7 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
         if (channelUID.getId().equals(CHANNEL_DOOR_STATE) || channelUID.getId().equals(CHANNEL_DOOR_STATUS)
                 || channelUID.getId().equals(CHANNEL_ROLLER_STATE) || channelUID.getId().equals(CHANNEL_SERIAL_NUMBER)
                 || channelUID.getId().equals(CHANNEL_NAME) || channelUID.getId().equals(CHANNEL_DOOR_OPEN)
-                || channelUID.getId().equals(CHANNEL_DOOR_CLOSED)) {
+                || channelUID.getId().equals(CHANNEL_DOOR_CLOSED)|| channelUID.getId().equals(CHANNEL_TYPE)) {
             readDeviceState();
         }
     }
@@ -73,7 +73,6 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
             } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
                 setDoorState(false);
             } else if (command instanceof RefreshType) {
-                // logger.debug("Refreshing state");
                 readDeviceState();
             }
         }
@@ -97,10 +96,12 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
     @Override
     public void updateState(JsonObject jsonDataBlob) {
         deviceConfig.readConfigFromJson(jsonDataBlob);
+        logger.error("updateState: {}", deviceConfig.getSerialNumber());
         updateState(CHANNEL_DOOR_STATE, deviceConfig.getDoorStatusOnOff());
         updateState(CHANNEL_DOOR_STATUS, new StringType(deviceConfig.getDeviceStatus()));
         updateState(CHANNEL_ROLLER_STATE, deviceConfig.getDeviceStatusPercent());
         updateState(CHANNEL_NAME, StringType.valueOf(deviceConfig.getName()));
+        updateState(CHANNEL_TYPE, StringType.valueOf(deviceConfig.getDeviceType()));
         updateState(CHANNEL_SERIAL_NUMBER, StringType.valueOf(deviceConfig.getSerialNumber()));
         updateState(CHANNEL_DOOR_OPEN, deviceConfig.isDoorOpenContact());
         updateState(CHANNEL_DOOR_CLOSED, deviceConfig.isDoorClosedContact());

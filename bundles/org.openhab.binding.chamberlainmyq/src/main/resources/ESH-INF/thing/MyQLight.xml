@@ -11,12 +11,9 @@
         <description>On/off switch</description>
         <channels>
             <channel id="lightstate" typeId="lightstate"/>
-            <channel id="deviceName" typeId="name"/>
-            <channel id="deviceType" typeId="type"/>
+            <channel id="devicename" typeId="devicename"/>
+            <channel id="devicetype" typeId="devicetype"/>
         </channels>
-        <properties>
-            <property name="SerialNumber"></property>
-        </properties>
     </thing-type>
 </thing:thing-descriptions>
 

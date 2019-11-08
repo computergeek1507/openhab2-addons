@@ -57,7 +57,7 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         if (channelUID.getId().equals(CHANNEL_LIGHT_STATE) || channelUID.getId().equals(CHANNEL_SERIAL_NUMBER)
-                || channelUID.getId().equals(CHANNEL_NAME)) {
+                || channelUID.getId().equals(CHANNEL_NAME) || channelUID.getId().equals(CHANNEL_TYPE)) {
             readDeviceState();
         }
     }
@@ -70,7 +70,6 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
             } else if (command.equals(OnOffType.OFF)) {
                 setLightState(false);
             } else if (command instanceof RefreshType) {
-                // logger.debug("Refreshing state");
                 readDeviceState();
             }
         }
@@ -95,9 +94,9 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
     public void updateState(JsonObject jsonDataBlob) {
         deviceConfig.readConfigFromJson(jsonDataBlob);
         updateState(CHANNEL_LIGHT_STATE, deviceConfig.getLightStatusOnOff());
-        updateState(CHANNEL_ROLLER_STATE, deviceConfig.getDeviceStatusPercent());
         updateState(CHANNEL_NAME, StringType.valueOf(deviceConfig.getName()));
         updateState(CHANNEL_SERIAL_NUMBER, StringType.valueOf(deviceConfig.getSerialNumber()));
+        updateState(CHANNEL_TYPE, StringType.valueOf(deviceConfig.getDeviceType()));
         updateStatus(deviceConfig.getThingOnline());
     }
 }

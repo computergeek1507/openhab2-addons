@@ -40,12 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  */
  @Component(configurationPid = "binding.chamberlainmyq", service = ThingHandlerFactory.class)
 public class ChamberlainMyQHandlerFactory extends BaseThingHandlerFactory {
-    //public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DOOR_OPENER,
-    //        THING_TYPE_LIGHT);
-            
-    //public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS =  Stream.concat(THING_TYPE_DOOR_OPENER.stream(), 
-    //THING_TYPE_LIGHT.stream()).collect(Collectors.toSet());
-    
+
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS =  Collections.unmodifiableSet(
             Stream.of(THING_TYPE_DOOR_OPENER, THING_TYPE_LIGHT).collect(Collectors.toSet()));
 

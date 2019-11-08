@@ -102,14 +102,14 @@ public class ChamberlainMyQDeviceDiscoveryService extends AbstractDiscoveryServi
             if (!element.isJsonObject()) {
                 continue;
             }
-            if (element.getAsJsonObject().get(MYQ_TYPE) != null) {
+            if (element.getAsJsonObject().get(MYQ_SERIAL) != null) {
                 ChamberlainMyQDeviceConfig config = new ChamberlainMyQDeviceConfig(element.getAsJsonObject());
 
-                String deviceType = config.getDeviceType();
-                logger.debug("New Device {}", config.getDeviceType());
-                if (deviceType.compareTo("garagedooropener") == 0) {
+                String deviceFamily = config.getDeviceFamily();
+                logger.debug("New Device {}", config.getDeviceFamily());
+                if (deviceFamily.compareTo("garagedoor") == 0) {
                     addMyQDevice(THING_TYPE_DOOR_OPENER, config);
-                } else if (deviceType.compareTo("lamp") == 0) {
+                } else if (deviceFamily.compareTo("lamp") == 0) {
                     addMyQDevice(THING_TYPE_LIGHT, config);
                 }
             }

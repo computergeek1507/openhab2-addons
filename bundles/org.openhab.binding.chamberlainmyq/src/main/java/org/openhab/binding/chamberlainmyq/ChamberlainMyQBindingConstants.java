@@ -41,7 +41,8 @@ public class ChamberlainMyQBindingConstants {
     public static final String CHANNEL_DOOR_OPEN = "dooropen";
     public static final String CHANNEL_DOOR_CLOSED = "doorclosed";
 
-    public static final String CHANNEL_NAME = "name";
+    public static final String CHANNEL_TYPE = "devicetype";
+    public static final String CHANNEL_NAME = "devicename";
     public static final String CHANNEL_SERIAL_NUMBER = "serialnumber";
 
     // Bridge config properties
@@ -53,6 +54,7 @@ public class ChamberlainMyQBindingConstants {
 
     // Door Opener/Light config properties
     public static final String MYQ_TYPE = "device_type";
+    public static final String MYQ_FAMILY = "device_family";
     public static final String MYQ_SERIAL = "serial_number";
     public static final String MYQ_NAME = "name";
     public static final String MYQ_ONLINE = "online";

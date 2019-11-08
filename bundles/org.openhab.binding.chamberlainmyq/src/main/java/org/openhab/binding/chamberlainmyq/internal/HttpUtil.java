@@ -62,8 +62,8 @@ public class HttpUtil {
      * @return the response body or <code>NULL</code> when the request went wrong
      * @throws IOException when the request execution failed, timed out or it was interrupted
      */
-    public static String executeUrl(String httpMethod, String url, int timeout) throws IOException {
-        return executeUrl(httpMethod, url, null, null, timeout);
+    public static String executeUrl(String httpMethod, String url, int timeout, boolean shouldReturn) throws IOException {
+        return executeUrl(httpMethod, url, null, null, timeout, shouldReturn);
     }
 
     /**
@@ -82,9 +82,9 @@ public class HttpUtil {
      * @return the response body or <code>NULL</code> when the request went wrong
      * @throws IOException when the request execution failed, timed out or it was interrupted
      */
-    public static String executeUrl(String httpMethod, String url, InputStream content, String contentType, int timeout)
+    public static String executeUrl(String httpMethod, String url, InputStream content, String contentType, int timeout, boolean shouldReturn)
             throws IOException {
-        return executeUrl(httpMethod, url, null, content, contentType, timeout);
+        return executeUrl(httpMethod, url, null, content, contentType, timeout, shouldReturn);
     }
 
     /**
@@ -102,10 +102,10 @@ public class HttpUtil {
      * @throws IOException when the request execution failed, timed out or it was interrupted
      */
     public static String executeUrl(String httpMethod, String url, Properties httpHeaders, InputStream content,
-            String contentType, int timeout) throws IOException {
+            String contentType, int timeout, boolean shouldReturn) throws IOException {
         startHttpClient(client);
 
-        client.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, USERAGENT));
+        //client.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, USERAGENT));
 
         HttpMethod method = HttpUtil.createHttpMethod(httpMethod);
 
@@ -117,30 +117,12 @@ public class HttpUtil {
             }
         }
 
-        // add basic auth header, if url contains user info
-        try {
-            URI uri = new URI(url);
-            if (uri.getUserInfo() != null) {
-                String[] userInfo = uri.getUserInfo().split(":");
-
-                String user = userInfo[0];
-                String password = userInfo[1];
-
-                String basicAuthentication = "Basic " + B64Code.encode(user + ":" + password, StringUtil.__ISO_8859_1);
-                request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
-            }
-        } catch (URISyntaxException e) {
-            logger.debug("String {} can not be parsed as URI reference", url);
-        }
-
         // add content if a valid method is given ...
         if (content != null && (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT))) {
             request.content(new InputStreamContentProvider(content), contentType);
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to execute {}", request.getURI());
-        }
+        logger.trace("About to execute {}", request.getURI());
 
         try {
             ContentResponse response = request.send();
@@ -149,6 +131,9 @@ public class HttpUtil {
                 String statusLine = statusCode + " " + response.getReason();
                 logger.debug("Method failed: {}", statusLine);
             }
+            
+            if(!shouldReturn)
+                return null;
 
             byte[] rawResponse = response.getContent();
             String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()

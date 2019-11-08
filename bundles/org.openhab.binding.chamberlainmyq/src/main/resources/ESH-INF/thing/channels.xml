@@ -39,16 +39,16 @@
         <description>Garage Door Closed</description>
         <state readOnly="true" />
     </channel-type>
-	<channel-type id="type" advanced="true">
+	<channel-type id="devicetype" advanced="true">
 		<item-type>String</item-type>
-		<label>Type</label>
-		<description>Type</description>
+		<label>Device Type</label>
+		<description>Device Type</description>
 		<state readOnly="true" />
 	</channel-type>
-		<channel-type id="name">
+		<channel-type id="devicename">
 		<item-type>String</item-type>
-		<label>Name</label>
-		<description>Name</description>
+		<label>Device Name</label>
+		<description>Device Name</description>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

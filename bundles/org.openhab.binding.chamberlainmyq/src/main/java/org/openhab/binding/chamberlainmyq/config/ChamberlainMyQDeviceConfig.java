@@ -27,6 +27,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * The {@link ChamberlainMyQDeviceConfig} class represents the common configuration
  * parameters of a MyQ Device
@@ -36,16 +40,20 @@ import com.google.gson.JsonObject;
  */
 public class ChamberlainMyQDeviceConfig {
     private String deviceType;
+    private String deviceFamily;
     private String state;
     private String name;
     private String serialNumber;
     private boolean online;
+    
+    private Logger logger = LoggerFactory.getLogger(ChamberlainMyQDeviceConfig.class);
 
     public ChamberlainMyQDeviceConfig(Map<String, String> properties) {
         this.deviceType = properties.get(MYQ_TYPE).toString().replaceAll("\"", "");
         this.state = properties.get(MYQ_STATE).toString().replaceAll("\"", "");
         this.name = properties.get(MYQ_NAME).toString().replaceAll("\"", "");
         this.serialNumber = properties.get(MYQ_SERIAL).toString().replaceAll("\"", "");
+        this.deviceFamily = properties.get(MYQ_FAMILY).toString().replaceAll("\"", "");
 
         this.online = Boolean.valueOf(properties.get(MYQ_ONLINE).toString());
     }
@@ -59,38 +67,37 @@ public class ChamberlainMyQDeviceConfig {
         this.deviceType = jsonConfig.get(MYQ_TYPE).toString().replaceAll("\"", "");
         this.serialNumber = jsonConfig.get(MYQ_SERIAL).toString().replaceAll("\"", "");
         this.name = jsonConfig.get(MYQ_NAME).toString().toString().replaceAll("\"", "");
+        this.deviceFamily = jsonConfig.get(MYQ_FAMILY).toString().replaceAll("\"", "");
+
+        logger.trace("readConfigFromJson, reading states"); 
         
-        //JsonObject jsonState = jsonConfig.get(MYQ_STATE);
-        //if (jsonState != null && jsonState.has(MYQ_DOORSTATE)) {
-        //    this.state = jsonState.get(MYQ_DOORSTATE).toString().replaceAll("\"", "");
-        //}
-        //if (jsonState != null && jsonState.has(MYQ_LAMPSTATE)) {
-        //    this.state = jsonState.get(MYQ_LAMPSTATE).toString().replaceAll("\"", "");
-        //}
+        JsonObject jsonState = jsonConfig.get(MYQ_STATE).getAsJsonObject();
         
-        //if (jsonState != null && jsonState.has(MYQ_ONLINE)) {
-        //    this.online = Boolean.valueOf(this.state = jsonState.get(MYQ_ONLINE).toString());
-        //}
-        
-        Map deviceStates = ((Map)jsonConfig.get(MYQ_STATE)); 
-          
-        // iterating address Map 
-        Iterator<Map.Entry> itr1 = deviceStates.entrySet().iterator(); 
-        while (itr1.hasNext()) { 
-            Map.Entry pair = itr1.next();
-            if(pair.getKey().toString().compareTo(MYQ_DOORSTATE) == 0 || 
-                    pair.getKey().toString().compareTo(MYQ_LAMPSTATE) == 0) {
-                this.state = pair.getValue().toString().replaceAll("\"", "");
-            }
-            if(pair.getKey().toString().compareTo(MYQ_ONLINE) == 0) {
-                this.online = Boolean.valueOf(pair.getValue().toString());
-            }
-            //logger.trace(pair.getKey() + " : " + pair.getValue()); 
-        } 
+        if(jsonState != null){
+            logger.trace("jsonState {}",jsonState); 
+        }else{
+            logger.trace("jsonState is null"); 
+        }
+        if(jsonState != null && jsonState.has(MYQ_DOORSTATE))
+        {
+            logger.trace("has {}",MYQ_DOORSTATE); 
+            this.state = jsonState.get(MYQ_DOORSTATE).getAsString();
+        }
+        if(jsonState != null && jsonState.has(MYQ_LAMPSTATE))
+        {
+            logger.trace("has {}",MYQ_LAMPSTATE); 
+            this.state = jsonState.get(MYQ_LAMPSTATE).getAsString();
+        }
+        if(jsonState != null && jsonState.has(MYQ_ONLINE))
+        {
+            logger.trace("has {}",MYQ_ONLINE); 
+            this.online = Boolean.valueOf(jsonState.get(MYQ_ONLINE).toString());
+        }
     }
 
     public String asString() {
         return ("Device Serial: " + serialNumber + "\n" + "Device Type: " + deviceType + "\n" 
+                + "Device Family: " + deviceFamily + "\n" 
                 + "\n" + "Name:  " + name + "\n" + "State:  " + state + "\n" + "Online:  " + online + "\n");
     }
 
@@ -170,6 +177,10 @@ public class ChamberlainMyQDeviceConfig {
     public String getDeviceType() {
         return deviceType;
     }
+    
+    public String getDeviceFamily() {
+        return deviceFamily;
+    }
 
     public String getState() {
         return state;
@@ -194,6 +205,7 @@ public class ChamberlainMyQDeviceConfig {
         properties.put(MYQ_STATE, getState());
         properties.put(MYQ_NAME, getName());
         properties.put(MYQ_ONLINE, getOnline());
+        properties.put(MYQ_FAMILY, getDeviceFamily());
         return properties;
     }
 }

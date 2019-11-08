@@ -198,11 +198,15 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (!data.get("UserId").isJsonNull()) {
-            accountId = data.get("UserId").getAsString();
-            logger.debug("myq UserId: {}", accountId);
+        JsonElement JsonAccount = data.get("Account");
+        if (JsonAccount.isJsonObject()) {
+            if (!JsonAccount.getAsJsonObject().get("Id").isJsonNull()) {
+            accountId = JsonAccount.getAsJsonObject().get("Id").getAsString();
+            logger.debug("myq AccountId: {}", accountId);
             return true;
         }
+        }
+        
         logger.error("getting myq accountId failed");
         return false;
     }
@@ -321,6 +325,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
 
     private synchronized void refreshDeviceState() {
         try {
+            logger.trace("refreshDeviceState");
             JsonObject resultJson = getMyqData();
             Bridge bridge = getThing();
 
@@ -334,11 +339,12 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
                         continue;
                     }
                     if (element.getAsJsonObject().get(MYQ_SERIAL) != null) {
-                        String findDeviceSerial = element.getAsJsonObject().get(MYQ_SERIAL).toString();
+                        String findDeviceSerial = element.getAsJsonObject().get(MYQ_SERIAL).getAsString();
                         for (Thing thing : things) {
                             if (thing.getUID().getId().compareTo(findDeviceSerial) == 0) {
                                 ChamberlainMyQHandler test = (ChamberlainMyQHandler) thing.getHandler();
                                 if (test != null) {
+                                    logger.trace("updating state");
                                     test.updateState(element.getAsJsonObject());
                                 }
                             }
@@ -383,34 +389,34 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
         header.put("Accept", "application/json");
         //header.put("Connection", "keep-alive");
         header.put("Content-Type", "application/json");
-        header.put("User-Agent", USERAGENT);
-        logger.debug("User-Agent: {}", USERAGENT);
+        //header.put("User-Agent", USERAGENT);
+        //logger.debug("User-Agent: {}", USERAGENT);
         header.put("BrandId", BRANDID);
-        logger.debug("BrandId: {}", BRANDID);
+        logger.trace("BrandId: {}", BRANDID);
         //header.put("ApiVersion", APIVERSION);
         //logger.debug("ApiVersion: {}", APIVERSION);
         //header.put("Culture", CULTURE);
         //logger.debug("Culture: {}", CULTURE);
         if (!login) {
             header.put("SecurityToken", securityToken);
-            logger.debug("SecurityToken: {}", securityToken);
+            logger.trace("SecurityToken: {}", securityToken);
         }
         header.put("MyQApplicationId", APP_ID);
-        logger.debug("MyQApplicationId: {}", APP_ID);
-        logger.debug("Requesting method {}", method);
-        logger.debug("Requesting URL {}", url);
-        logger.debug("Requesting payload {}", payload);
-        logger.debug("Requesting payloadType {}", payloadType);
+        logger.trace("MyQApplicationId: {}", APP_ID);
+        logger.trace("Requesting method {}", method);
+        logger.trace("Requesting URL {}", url);
+        logger.trace("Requesting payload {}", payload);
+        logger.trace("Requesting payloadType {}", payloadType);
 
         String dataString;
         try {
             dataString = HttpUtil.executeUrl(method, url, header,
-                    payload == null ? null : IOUtils.toInputStream(payload), payloadType, (this.config.timeout * 1000));
+                    payload == null ? null : IOUtils.toInputStream(payload), payloadType, (this.config.timeout * 1000), !command);
 
             if(command && dataString == null)
                 return null;
 
-            logger.debug("Received MyQ JSON: {}", dataString);
+            logger.trace("Received MyQ JSON: {}", dataString);
 
             if (dataString == null) {
                 logger.error("Null response from MyQ server");
@@ -423,9 +429,14 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
         try {
             JsonParser parser = new JsonParser();
             JsonObject rootNode = parser.parse(dataString).getAsJsonObject();
-
+            logger.trace("myq parser.parse worked");
+            if(!rootNode.has("code"))
+            {
+                logger.trace("myq request: no code found, Success!");
+                return rootNode;
+            }
             int returnCode = Integer.parseInt(rootNode.get("code").getAsString());
-            logger.debug("myq ReturnCode: {}", returnCode);
+            logger.trace("myq ReturnCode: {}", returnCode);
 
             ChamberlainMyQResponseCode rc = ChamberlainMyQResponseCode.fromCode(returnCode);
 
