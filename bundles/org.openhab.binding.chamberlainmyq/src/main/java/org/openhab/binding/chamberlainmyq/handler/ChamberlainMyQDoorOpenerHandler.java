@@ -96,7 +96,7 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
     @Override
     public void updateState(JsonObject jsonDataBlob) {
         deviceConfig.readConfigFromJson(jsonDataBlob);
-        logger.error("updateState: {}", deviceConfig.getSerialNumber());
+        logger.trace("updateState: {}", deviceConfig.getSerialNumber());
         updateState(CHANNEL_DOOR_STATE, deviceConfig.getDoorStatusOnOff());
         updateState(CHANNEL_DOOR_STATUS, new StringType(deviceConfig.getDeviceStatus()));
         updateState(CHANNEL_ROLLER_STATE, deviceConfig.getDeviceStatusPercent());

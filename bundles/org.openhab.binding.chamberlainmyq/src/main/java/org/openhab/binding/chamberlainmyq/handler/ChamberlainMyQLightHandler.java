@@ -93,6 +93,7 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
     @Override
     public void updateState(JsonObject jsonDataBlob) {
         deviceConfig.readConfigFromJson(jsonDataBlob);
+        logger.trace("updateState: {}", deviceConfig.getSerialNumber());
         updateState(CHANNEL_LIGHT_STATE, deviceConfig.getLightStatusOnOff());
         updateState(CHANNEL_NAME, StringType.valueOf(deviceConfig.getName()));
         updateState(CHANNEL_SERIAL_NUMBER, StringType.valueOf(deviceConfig.getSerialNumber()));
