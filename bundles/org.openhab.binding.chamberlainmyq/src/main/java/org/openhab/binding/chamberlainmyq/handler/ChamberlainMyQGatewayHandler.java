@@ -24,7 +24,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -58,7 +59,7 @@ import com.google.gson.JsonParser;
 public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(ChamberlainMyQGatewayHandler.class);
-
+    private final BundleContext bundleContext = FrameworkUtil.getBundle(DiscoveryService.class).getBundleContext();
     private String securityToken;
     private String accountId;
     ScheduledFuture<?> mainPollRefreshJob;
